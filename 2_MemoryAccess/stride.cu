@@ -40,10 +40,10 @@ int main(){
         h_in[i] = 1.0;
     }
 
-    for (int i = 0; i < 5; i++){
-        cudaMemcpy(d_in, h_in, total_size*sizeof(float), cudaMemcpyHostToDevice);
-        stridedMemAccess<<<gridSize, blockSize>>>(d_in,0);
-    }
+    //kernel warm up
+    cudaMemcpy(d_in, h_in, total_size*sizeof(float), cudaMemcpyHostToDevice);
+    stridedMemAccess<<<gridSize, blockSize>>>(d_in,0);
+
 
     for (int stride = 1; stride <= 32; stride++) {
 
