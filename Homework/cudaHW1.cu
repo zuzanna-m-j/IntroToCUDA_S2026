@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda_runtime.h>
+#include <cassert>
 
 __global__ void kernel(int *in_data, int *out_data, int *out_tid, int N)
 {   
     
-/// Write the kernel
-
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    /// Finish the kernel
 
 }
 
@@ -79,8 +80,14 @@ int main()
     // Verify results
     for (int i = 0; i < N; i++)
     {
-        printf("out_data[%d] = %d, processed by tid %d (%d)\n",i, out_data[i],out_tid[i],i*4+1);
+        printf("out_data[%d] = %d, processed by tid %d || Correct result: out_data[%d] =  %d, processed by thread %d\n",i, out_data[i],out_tid[i],i,i*4+1,i%32);
+        assert(out_data[i] ==  i*4+1 && "Error in out_data, see above for correct result");
+        assert(out_tid[i] == i%32 && "Error in out_tid, see above for correct result");
     }
+
+    printf("Results are correct!\n");
+
+
     
 
     // Free device memory
