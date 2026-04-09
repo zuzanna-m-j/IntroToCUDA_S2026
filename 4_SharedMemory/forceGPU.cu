@@ -23,7 +23,7 @@ __global__ void ForceGPUShared(float *d_force, float *d_pos, int N, int spacer)
     __syncthreads();
 
     for(int m = 0; m < 3; m++)
-        d_force[gid] = (shared_pos[(tid+m)%N] - my_pos) + (shared_pos[(N + tid-m)%N] - my_pos);
+        d_force[gid] += (shared_pos[(tid+m)%N] - my_pos) + (shared_pos[(N + tid-m)%N] - my_pos);
 
 }
 
@@ -35,7 +35,7 @@ __global__ void ForceGPU(float *d_force, float *d_pos, int N, int spacer)
     d_force[tid + offset] = 0.0;
     float my_pos = d_pos[spacer*(tid + offset)];
     for(int m = 0; m < 3; m++)
-        d_force[tid + offset] = (d_pos[spacer*((tid+m)%N + offset)] - my_pos) + (d_pos[spacer*((N + tid-m)%N + offset)] - my_pos);
+        d_force[tid + offset] += (d_pos[spacer*((tid+m)%N + offset)] - my_pos) + (d_pos[spacer*((N + tid-m)%N + offset)] - my_pos);
 
 }
 
@@ -49,7 +49,7 @@ void ForceCPU(float *force, float *pos, int N, int len, int spacer){
         int inx = i%len;
         int offset = len * block_id;
         for(int m = 0; m < 3; m++)
-            force[i] = (pos[spacer*((inx+m)%len + offset)] - my_pos) + (pos[spacer*((len+inx-m)%len + offset)] - my_pos);
+            force[i] += (pos[spacer*((inx+m)%len + offset)] - my_pos) + (pos[spacer*((len+inx-m)%len + offset)] - my_pos);
 
     }
 }
