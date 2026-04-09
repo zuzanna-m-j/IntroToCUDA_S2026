@@ -7,8 +7,10 @@ __global__ void kernel(int *in_data, int *out_data, int *out_tid, int N)
 {   
     
     int tid = blockIdx.x * blockDim.x + threadIdx.x;
-    /// Finish the kernel
 
+    // Finish the kernel
+
+    
 }
 
 
@@ -50,7 +52,7 @@ int main()
     int blocksPerGrid = 1;
     
     // Launch the kernel
-    printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
+    printf("CUDA kernel launch with num_blocks = %d and num_threads = %d \n", blocksPerGrid, threadsPerBlock);
 
     //kernel warm-up
     kernel<<<1, 1>>>(d_in_data,d_out_data,d_out_tid, N);
@@ -76,16 +78,16 @@ int main()
     cudaMemcpy(out_data, d_out_data, bytes, cudaMemcpyDeviceToHost);
     cudaMemcpy(out_tid, d_out_tid, bytes, cudaMemcpyDeviceToHost);
 
-    
     // Verify results
-    for (int i = 0; i < N; i++)
-    {
-        printf("out_data[%d] = %d, processed by tid %d || Correct result: out_data[%d] =  %d, processed by thread %d\n",i, out_data[i],out_tid[i],i,i*4+1,i%32);
-        assert(out_data[i] ==  i*4+1 && "Error in out_data, see above for correct result");
-        assert(out_tid[i] == i%32 && "Error in out_tid, see above for correct result");
+    int correct = 1;
+    for (int i = 0; i < N; i++){
+        if(out_data[i] !=  i*4+1 || out_tid[i] != i%32){
+            printf("Error: Your results are out_data[%d] = %d, processed by thread %d || Correct result: out_data[%d] =  %d, processed by thread %d\n",i, out_data[i],out_tid[i],i,i*4+1,i%32); 
+            correct = 0;
+        }
     }
-
-    printf("Results are correct!\n");
+    if (correct == 1)
+        printf("Results are correct!\n");
 
 
     
