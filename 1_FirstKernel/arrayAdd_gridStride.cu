@@ -5,6 +5,8 @@
 __global__ void arrayAdd_gridStride(float *d_a, float *d_b, float *d_out, int size)
 {
 /// Insert grid-stride loop here
+d_out[tid] = d_a[tid] + d_b[tid];
+
 }
 
 int main()
